@@ -26,6 +26,7 @@ public class NNDFS implements NDFS {
     private final Graph graph;
     private final Colors colors = new Colors();
     private int nrWorkers;
+    private File promelaFile;
     
     public volatile Map<State, AtomicCounter> counter;
 
@@ -43,6 +44,7 @@ public class NNDFS implements NDFS {
         System.out.printf("mcnndfs: %d\n", nrWorkers);
         this.nrWorkers = nrWorkers;
         this.graph = GraphFactory.createGraph(promelaFile);
+        this.promelaFile = promelaFile;
         counter = new ConcurrentHashMap<State, AtomicCounter>();
     }
     
@@ -131,7 +133,7 @@ public class NNDFS implements NDFS {
         // run nrWorkers workers on dfsBlue
         for(int i = 0; i < nrWorkers; i ++) {
             //System.out.printf("Creating worker [%d]\n", i);
-            Worker worker = new Worker(i, graph, s, colors, this);
+            Worker worker = new Worker(i, promelaFile, s, colors, this);
             worker.start();
         }
         

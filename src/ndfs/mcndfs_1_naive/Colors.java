@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Colors {
 
     private final Map<State, Color> map = new HashMap<State, Color>();
-    private volatile ConcurrentLinkedQueue<State> red;
+    private volatile ConcurrentLinkedQueue<State> red = new ConcurrentLinkedQueue<State>();
 
     /**
      * Returns <code>true</code> if the specified state has the specified color,
@@ -50,10 +50,19 @@ public class Colors {
         }
     }
     public boolean setRed(State state) {
+        if(red == null) {
+            System.out.println("red = null");
+            return false;
+        }
+        
     	return red.add(state);
     }
     
     public boolean getRed(State state) {
+        if(red == null) {
+            System.out.println("red = null");
+            return false;
+        }
     	return red.contains(state);
     }
 }
