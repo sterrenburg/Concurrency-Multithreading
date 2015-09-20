@@ -22,11 +22,10 @@ import ndfs.ResultException;
  * This class should be modified/extended to implement Figure 2 of this paper.
  */
 public class NNDFS implements NDFS {
-
-    private final Graph graph;
-    private final Colors colors = new Colors();
+    
     private int nrWorkers;
     private File promelaFile;
+    private Graph graph;
     
     public volatile Map<State, AtomicCounter> counter;
 
@@ -43,8 +42,8 @@ public class NNDFS implements NDFS {
     public NNDFS(File promelaFile, int nrWorkers) throws FileNotFoundException {
         System.out.printf("mcnndfs: %d\n", nrWorkers);
         this.nrWorkers = nrWorkers;
-        this.graph = GraphFactory.createGraph(promelaFile);
         this.promelaFile = promelaFile;
+        this.graph = GraphFactory.createGraph(promelaFile);
         counter = new ConcurrentHashMap<State, AtomicCounter>();
     }
     
@@ -61,6 +60,7 @@ public class NNDFS implements NDFS {
         }
         
         if(atomicCounter == null) {
+            // TODO exception
             System.out.printf("Error: AtomicCounter null\n");
         }
         
@@ -71,56 +71,14 @@ public class NNDFS implements NDFS {
         AtomicCounter atomicCounter = counter.get(s);
         
         if(atomicCounter == null) {
+            // TODO exception
             System.out.printf("Error: AtomicCounter null\n");
         }
         
         return atomicCounter.decrement();
     }
-
-    private void dfsRed(State s) throws ResultException {
-
-        for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.CYAN)) {
-                throw new CycleFoundException();
-            } else if (colors.hasColor(t, Color.BLUE)) {
-                colors.setRed(t);
-                dfsRed(t);
-            }
-        }
-        
-        if(s.isAccepting()) {
-        	counter.put(s, counter.get(s).decrement());
-        	AtomicCounter c = counter.get(s);
-        	
-        	while(c.value() > 0) {
-        		// spin
-        	}
-        }
-    }
-
-    private void dfsBlue(State s) throws ResultException {
-    	System.out.printf("mcndfs doing dfsBlue\n");
-    	// check whether initialization took place already
-    	if(!counter.containsKey(s)) {
-    		counter.put(s, new AtomicCounter());
-    	}
-
-        colors.color(s, Color.CYAN);
-        
-        for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.WHITE)) {
-                dfsBlue(t);
-            }
-        }
-        if (s.isAccepting()) {
-        	counter.put(s, counter.get(s).increment());
-            dfsRed(s);
-            colors.setRed(s);
-        } else {
-            colors.color(s, Color.BLUE);
-        }
-    }
     
+    // testing
     public void access(State s) {
         System.out.printf("nndfs access function\n");
         AtomicCounter c = new AtomicCounter();
@@ -131,13 +89,21 @@ public class NNDFS implements NDFS {
         //dfsBlue(s);
         this.access(s);
         // run nrWorkers workers on dfsBlue
-        for(int i = 0; i < nrWorkers; i ++) {
-            //System.out.printf("Creating worker [%d]\n", i);
-            Worker worker = new Worker(i, promelaFile, s, colors, this);
-            worker.start();
+//        for(int i = 0; i < nrWorkers; i ++) {
+//            //System.out.printf("Creating worker [%d]\n", i);
+//            Worker worker = new Worker(i, promelaFile, s, this);
+//            worker.start();
+//        }
+        
+        try {
+            for(int i = 0; i < nrWorkers; i ++) {
+                //System.out.printf("Creating worker [%d]\n", i);
+                Worker worker = new Worker(i, promelaFile, s, this);
+                worker.start();
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
         }
-        
-        
         
         throw new NoCycleFoundException();
     }
