@@ -12,7 +12,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Dalie
  */
 class AtomicCounter {
-        private AtomicInteger c = new AtomicInteger(0);
+    private AtomicInteger c;
+    
+    public AtomicCounter() {
+         c = new AtomicInteger(0);
+    }
 
     public AtomicCounter increment() {
         c.incrementAndGet();
