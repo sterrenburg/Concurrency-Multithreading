@@ -22,6 +22,7 @@ public class Worker implements Runnable, NDFS {
     private Graph graph;
     
     private final Colors colors;
+    private Red red;
 
     public Worker(int i, File promelaFile, State s, NNDFS nndfs) throws FileNotFoundException {
         System.out.printf("[%d] Creating\n", threadNumber);
@@ -30,11 +31,12 @@ public class Worker implements Runnable, NDFS {
         this.nndfs = nndfs;
         this.graph = GraphFactory.createGraph(promelaFile);
         this.colors = new Colors();
+        
+        red = new Red();
     }
     
     private void dfsBlue(State s) throws ResultException {
     	System.out.printf("[%d] dfsBlue\n", threadNumber);
-        
     	// check whether initialization took place already
     	if(!nndfs.counter.containsKey(s)) {
     		nndfs.counter.put(s, new AtomicCounter());
@@ -50,7 +52,7 @@ public class Worker implements Runnable, NDFS {
         if (s.isAccepting()) {
         	nndfs.incrementCount(s);
             dfsRed(s);
-            colors.setRed(s); // global
+            red.set(s);
         } else {
             colors.color(s, Color.BLUE);
         }
@@ -62,7 +64,7 @@ public class Worker implements Runnable, NDFS {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
             } else if (colors.hasColor(t, Color.BLUE)) {
-                colors.setRed(t);
+                red.set(t);
                 dfsRed(t);
             }
         }
@@ -71,9 +73,9 @@ public class Worker implements Runnable, NDFS {
         	nndfs.decrementCount(s);
         	AtomicCounter c = nndfs.getCount(s);
         	
-        	while(c.value() > 0) {
-        		// spin
-        	}
+//        	while(c.value() > 0) {
+//        		// spin
+//        	}
         }
     }
 
@@ -90,6 +92,7 @@ public class Worker implements Runnable, NDFS {
         }
         
         System.out.printf("[%d] Exiting\n", threadNumber);
+        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
     }
     
     public void start () {
