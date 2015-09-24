@@ -45,21 +45,25 @@ public class Worker implements Runnable, NDFS {
         colors.color(s, Color.CYAN);
         
         for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.WHITE)) {
+            if (colors.hasColor(t, Color.WHITE) && !red.get(t)) {
                 dfsBlue(t);
             }
         }
         if (s.isAccepting()) {
-        	nndfs.incrementCount(s);
+        	//nndfs.incrementCount(s);
             dfsRed(s);
             red.set(s);
-        } else {
-            colors.color(s, Color.BLUE);
+            // need counter here
         }
+        
+        // removed else statement here to conform to alg 2
+        colors.color(s, Color.BLUE);
     }
     
     private void dfsRed(State s) throws ResultException {
         System.out.printf("[%d] dfsRed\n", threadNumber);
+        colors.setPink(s, true);
+        
         for (State t : graph.post(s)) {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();

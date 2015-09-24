@@ -2,7 +2,6 @@ package ndfs.mcndfs_1_naive;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import graph.State;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,8 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Colors {
 
-    private final Map<State, Color> map = new HashMap<State, Color>();
-    private volatile ConcurrentLinkedQueue<State> red = new ConcurrentLinkedQueue<State>();
+    private final Map<State, Color> map    = new HashMap<State, Color>();
+    private final Map<State, Boolean> pink = new HashMap<State, Boolean>();
 
     /**
      * Returns <code>true</code> if the specified state has the specified color,
@@ -49,20 +48,17 @@ public class Colors {
             map.put(state, color);
         }
     }
-    public boolean setRed(State state) {
-        if(red == null) {
-            System.out.println("red = null");
+    public boolean setPink(State state, Boolean bool) {
+        return pink.put(state, bool) != null;
+    }
+    
+    public boolean getPink(State state) {
+        Boolean contains = pink.get(state);
+        
+        if(contains == false || contains == null) {
             return false;
         }
         
-    	return red.add(state);
-    }
-    
-    public boolean getRed(State state) {
-        if(red == null) {
-            System.out.println("red = null");
-            return false;
-        }
-    	return red.contains(state);
+        return true;
     }
 }
