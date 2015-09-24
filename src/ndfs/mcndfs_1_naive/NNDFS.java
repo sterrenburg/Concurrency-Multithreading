@@ -52,30 +52,35 @@ public class NNDFS implements NDFS {
     }
     
     public AtomicCounter incrementCount(State s) {
+        synchronized(this){
         AtomicCounter atomicCounter = counter.get(s);
         
         if(atomicCounter == null) {
-            atomicCounter = new AtomicCounter();
-            counter.put(s, atomicCounter);
+//            atomicCounter = new AtomicCounter();
+            counter.put(s, new AtomicCounter());
         }
         
-        if(atomicCounter == null) {
-            // TODO exception
-            System.out.printf("Error: AtomicCounter null\n");
-        }
         
-        return atomicCounter.increment();
+//        if(atomicCounter == null) {
+//            // TODO exception
+//            System.out.printf("Error: AtomicCounter null\n");
+//        }
+        
+        return atomicCounter.increment();;
+        }
     }
     
     public AtomicCounter decrementCount(State s) {
+        synchronized(this){
         AtomicCounter atomicCounter = counter.get(s);
         
-        if(atomicCounter == null) {
-            // TODO exception
-            System.out.printf("Error: AtomicCounter null\n");
-        }
-        
+//        if(atomicCounter == null) {
+//            // TODO exception
+//            System.out.printf("Error: AtomicCounter null\n");
+//        }
+//        
         return atomicCounter.decrement();
+        }
     }
     
     // testing
@@ -83,6 +88,7 @@ public class NNDFS implements NDFS {
         System.out.printf("nndfs access function\n");
         AtomicCounter c = new AtomicCounter();
         counter.put(s, c);
+
     }
 
     private void nndfs(State s) throws ResultException {

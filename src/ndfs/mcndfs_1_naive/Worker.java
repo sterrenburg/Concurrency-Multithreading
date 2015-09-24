@@ -35,10 +35,11 @@ public class Worker implements Runnable, NDFS {
     private void dfsBlue(State s) throws ResultException {
     	System.out.printf("[%d] dfsBlue\n", threadNumber);
         
-    	// check whether initialization took place already
-    	if(!nndfs.counter.containsKey(s)) {
-    		nndfs.counter.put(s, new AtomicCounter());
-    	}
+//    	// check whether initialization took place already
+//    	if(!nndfs.counter.containsKey(s)) {
+//    		nndfs.counter.put(s, new AtomicCounter());
+//    	}
+        nndfs.counter.putIfAbsent(s, new AtomicCounter());
 
         colors.color(s, Color.CYAN);
         
