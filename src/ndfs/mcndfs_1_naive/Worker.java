@@ -54,7 +54,7 @@ public class Worker implements Runnable, NDFS {
         if (s.isAccepting()) {
         	//nndfs.incrementCount(s);
             dfsRed(s);
-            red.set(s);
+//            red.set(s);
             // need counter here
         }
         
@@ -70,7 +70,7 @@ public class Worker implements Runnable, NDFS {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
             //} else if (colors.hasColor(t, Color.BLUE)) {
-            } else if (!colors.getPink(t) && red.get(s)) {
+            } else if (!colors.getPink(t) && !red.get(s)) {
 //                red.set(t);
                 dfsRed(t);
             }
