@@ -117,7 +117,7 @@ Implementation\
 \'a0\'a0\'a0(NNDFS/ln55) and setting a new one (NNDFS/ln59). Checking again for\
 \'a0\'a0\'a0whether atomicCounter is null should not be necessary. Same holds for\
 \'a0\'a0\'a0NNDFS.decrementCount().\
-	- putIfAbsent is atomic, use this \cf2 *done with sync block for increment and decr\cf0 \
+	- putIfAbsent is atomic, use this \cf2 *done with sync block -check the sync blocks out- !!!or some other mthd for increment and decr\cf0 \
 \'a0- access() appears to consist of operations that should go in a constructor. \
 \'a0- There's a race condition in setting a new AtomicCounter in Worker/ln38-41.\
 \'a0\'a0\'a0Checking whether the value exists and setting a new counter if it doesn't,\

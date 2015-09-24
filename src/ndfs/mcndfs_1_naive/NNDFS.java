@@ -56,8 +56,8 @@ public class NNDFS implements NDFS {
         AtomicCounter atomicCounter = counter.get(s);
         
         if(atomicCounter == null) {
-//            atomicCounter = new AtomicCounter();
-            counter.put(s, new AtomicCounter());
+            atomicCounter = new AtomicCounter();
+            counter.put(s, atomicCounter);
         }
         
         
@@ -66,7 +66,7 @@ public class NNDFS implements NDFS {
 //            System.out.printf("Error: AtomicCounter null\n");
 //        }
         
-        return atomicCounter.increment();;
+        return atomicCounter.increment();
         }
     }
     
@@ -84,16 +84,20 @@ public class NNDFS implements NDFS {
     }
     
     // testing
-    public void access(State s) {
-        System.out.printf("nndfs access function\n");
-        AtomicCounter c = new AtomicCounter();
-        counter.put(s, c);
-
-    }
+//    public void access(State s) {
+//        System.out.printf("nndfs access function\n");
+//        AtomicCounter c = new AtomicCounter();
+//        counter.put(s, c);
+//        c.increment();
+//        System.out.println("Incr count:"+c.value());
+//        this.incrementCount(s);
+//        System.out.println("is the mth incrementcount working?"+this.getCount(s).value());
+//
+//    }
 
     private void nndfs(State s) throws ResultException {
         //dfsBlue(s);
-        this.access(s);
+        //this.access(s);
         // run nrWorkers workers on dfsBlue
 //        for(int i = 0; i < nrWorkers; i ++) {
 //            //System.out.printf("Creating worker [%d]\n", i);
