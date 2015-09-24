@@ -24,7 +24,7 @@ public class Worker implements Runnable, NDFS {
     private final Colors colors;
     private Red red;
 
-    public Worker(int i, File promelaFile, State s, NNDFS nndfs) throws FileNotFoundException {
+    public Worker(int i, File promelaFile, State s, Red red, NNDFS nndfs) throws FileNotFoundException {
         System.out.printf("[%d] Creating\n", threadNumber);
         threadNumber = i;
         this.s = s;
@@ -32,11 +32,13 @@ public class Worker implements Runnable, NDFS {
         this.graph = GraphFactory.createGraph(promelaFile);
         this.colors = new Colors();
         
-        red = new Red();
+        //red = new Red();
+        this.red = red;
     }
     
     private void dfsBlue(State s) throws ResultException {
     	System.out.printf("[%d] dfsBlue\n", threadNumber);
+        System.out.printf("[%d]     no of pink: %d\n         no of red: %d (%d),(%s)\n", threadNumber, colors.pink.size(), red.size(), red.count(), red);
     	// check whether initialization took place already
     	if(!nndfs.counter.containsKey(s)) {
     		nndfs.counter.put(s, new AtomicCounter());
@@ -67,8 +69,9 @@ public class Worker implements Runnable, NDFS {
         for (State t : graph.post(s)) {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
-            } else if (colors.hasColor(t, Color.BLUE)) {
-                red.set(t);
+            //} else if (colors.hasColor(t, Color.BLUE)) {
+            } else if (!colors.getPink(t) && red.get(s)) {
+//                red.set(t);
                 dfsRed(t);
             }
         }
@@ -81,6 +84,9 @@ public class Worker implements Runnable, NDFS {
 //        		// spin
 //        	}
         }
+        
+        red.set(s);
+        colors.setPink(s, false);
     }
 
     public void run() {

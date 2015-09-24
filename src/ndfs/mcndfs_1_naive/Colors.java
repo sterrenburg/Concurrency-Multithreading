@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Colors {
 
     private final Map<State, Color> map    = new HashMap<State, Color>();
-    private final Map<State, Boolean> pink = new HashMap<State, Boolean>();
+    public final Map<State, Boolean> pink = new HashMap<State, Boolean>();
 
     /**
      * Returns <code>true</code> if the specified state has the specified color,
@@ -55,7 +55,7 @@ public class Colors {
     public boolean getPink(State state) {
         Boolean contains = pink.get(state);
         
-        if(contains == false || contains == null) {
+        if(contains == null || contains == false) {
             return false;
         }
         
