@@ -65,7 +65,7 @@ public class Worker implements Runnable, NDFS{
             }
         }
         if (s.isAccepting()) {
-            synchronized(this){
+            synchronized(this.nndfs){
 //                testCount ++;
                 nndfs.incrementCount(s);
 //                if(testCount == 100) {
@@ -95,7 +95,7 @@ public class Worker implements Runnable, NDFS{
         }
         
         if(s.isAccepting()) {
-            synchronized(this){
+            synchronized(this.nndfs){
         	nndfs.decrementCount(s);
 //                if(testCount >= 100 && (testState != null)) {
 //                    if(s == testState) {
