@@ -22,49 +22,37 @@ public class Worker implements Runnable, NDFS{
     private Graph graph;
     
     private final Colors colors;
-    
-    private State testState;
-    private int testCount = 0;
+    private State testState; // TODO remove
+    private int testCount = 0; // TODO remove
+    private Red red;
 
-    public Worker(int i, File promelaFile, State s, NNDFS nndfs) throws FileNotFoundException {
-        System.out.printf("[%d] Creating\n", threadNumber);
+    public Worker(int i, File promelaFile, State s, Red red, NNDFS nndfs) throws FileNotFoundException {
+        //System.out.printf("[%d] Creating\n", threadNumber);
         threadNumber = i;
         this.s = s;
         this.nndfs = nndfs;
         this.graph = GraphFactory.createGraph(promelaFile);
         this.colors = new Colors();
-
+        this.red = red;
     }
 
     private void dfsBlue(State s) throws ResultException {
-    	//System.out.printf("[%d] dfsBlue\n", threadNumber);
-//        NNDFS nndfs2 = this.nndfs;
-//        Map<State, AtomicCounter> counter = nndfs.counter;
-//        State s2 = s;
-//        AtomicCounter ac = counter.get(s2);
-//        if(ac == null) {
-//           System.out.println("@@@@");
-//            
-//        }
-        
-
-        
-//    	// check whether initialization took place already
-//    	if(!nndfs.counter.containsKey(s)) {
-//    		nndfs.counter.put(s, new AtomicCounter());
-//    	}
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
         
-       
+    	//System.out.printf("[%d] dfsBlue\n", threadNumber);
+        //System.out.printf("[%d]     no of pink: %d\n         no of red: %d (%d),(%s)\n", threadNumber, colors.pink.size(), red.size(), red.count(), red);
 
         colors.color(s, Color.CYAN);
         
         for (State t : graph.post(s)) {
-            if (colors.hasColor(t, Color.WHITE)) {
+            if (colors.hasColor(t, Color.WHITE) && !red.get(t)) {
                 dfsBlue(t);
             }
         }
+        
         if (s.isAccepting()) {
+            
+            //TODO check synchronized
             synchronized(this.nndfs){
 //                testCount ++;
                 nndfs.incrementCount(s);
@@ -73,23 +61,26 @@ public class Worker implements Runnable, NDFS{
 //                }
 //                
 //                if(testCount >= 100 && s == testState) {
-                    System.out.printf("[%d] incr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
+                    //System.out.printf("[%d] incr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
 //                }
             }
+            
             dfsRed(s);
-//            colors.setRed(s); // global
-        } else {
-            colors.color(s, Color.BLUE);
+            
         }
+        
+        // removed else statement here to conform to alg 2
+        colors.color(s, Color.BLUE);
     }
     
     private void dfsRed(State s) throws ResultException {
-      //  System.out.printf("[%d] dfsRed\n", threadNumber);
+        //System.out.printf("[%d] dfsRed\n", threadNumber);
+        colors.setPink(s, true);
+        
         for (State t : graph.post(s)) {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
-            } else if (colors.hasColor(t, Color.BLUE)) {
-                colors.setRed(t);
+            } else if (!colors.getPink(t) && !red.get(s)) {
                 dfsRed(t);
             }
         }
@@ -99,21 +90,38 @@ public class Worker implements Runnable, NDFS{
         	nndfs.decrementCount(s);
 //                if(testCount >= 100 && (testState != null)) {
 //                    if(s == testState) {
-                        System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
+                        //System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
 //                    }
 //                }
+                
+                
             }
 
         	AtomicCounter c = nndfs.getCount(s);
         	
+            int i = 0;
+//            int j = c.value();
+            
         	while(c.value() > 0) {
         		// spin
+                //i ++;
+                //if(i % 200 == 0) {
+                    //System.out.printf("[%d] spinning on %s\n", threadNumber, s);
+                //}
+                
+                //j = c.value();
         	}
+            
+            //System.out.printf("[%d] continue (value:)\n", threadNumber);
         }
+        //} // from synchronized
+        
+        red.set(s);
+        colors.setPink(s, false);
     }
 
     public void run() {
-        System.out.printf("[%d] Running\n", threadNumber);
+//        System.out.printf("[%d] Running\n", threadNumber);
         
         // TODO catch to Main
         try {
@@ -124,12 +132,12 @@ public class Worker implements Runnable, NDFS{
             // maybe use callable instead of runnable
         }
         
-        System.out.printf("[%d] Exiting\n", threadNumber);
-        
+//        System.out.printf("[%d] Exiting\n", threadNumber);
+//        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
     }
     
     public void start () {
-      System.out.printf("[%d] Starting\n",  threadNumber );
+//      System.out.printf("[%d] Starting\n",  threadNumber );
 
       if (t == null)
       {

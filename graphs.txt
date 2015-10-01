@@ -1,0 +1,8 @@
+yes accept-cycle.prom
+no  bintree-converge.prom
+yes bintree-cycle-max.prom
+yes bintree-cycle-min.prom
+yes bintree-cycle.prom
+no  bintree-loop.prom
+no  bintree.prom
+no  simple-loop.prom

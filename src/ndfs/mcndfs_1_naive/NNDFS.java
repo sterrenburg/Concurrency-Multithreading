@@ -53,33 +53,22 @@ public class NNDFS implements NDFS {
     
     public AtomicCounter incrementCount(State s) {
         synchronized(this){
-        AtomicCounter atomicCounter = counter.get(s);
-        
-        if(atomicCounter == null) {
-            atomicCounter = new AtomicCounter();
-            counter.put(s, atomicCounter);
-        }
-        
-        
-//        if(atomicCounter == null) {
-//            // TODO exception
-//            System.out.printf("Error: AtomicCounter null\n");
-//        }
-        
-        return atomicCounter.increment();
+            AtomicCounter atomicCounter = counter.get(s);  
+            
+            // TODO shouldn't be necessary
+            if(atomicCounter == null) {
+                atomicCounter = new AtomicCounter();
+                counter.put(s, atomicCounter);
+            }
+
+            return atomicCounter.increment();
         }
     }
     
     public AtomicCounter decrementCount(State s) {
         synchronized(this){
-        AtomicCounter atomicCounter = counter.get(s);
-        
-//        if(atomicCounter == null) {
-//            // TODO exception
-//            System.out.printf("Error: AtomicCounter null\n");
-//        }
-//        
-        return atomicCounter.decrement();
+            AtomicCounter atomicCounter = counter.get(s);
+            return atomicCounter.decrement();
         }
     }
     
@@ -98,6 +87,9 @@ public class NNDFS implements NDFS {
     private void nndfs(State s) throws ResultException {
         //dfsBlue(s);
         //this.access(s);
+        
+        Red red = new Red();
+        
         // run nrWorkers workers on dfsBlue
 //        for(int i = 0; i < nrWorkers; i ++) {
 //            //System.out.printf("Creating worker [%d]\n", i);
@@ -108,7 +100,7 @@ public class NNDFS implements NDFS {
         try {
             for(int i = 0; i < nrWorkers; i ++) {
                 //System.out.printf("Creating worker [%d]\n", i);
-                Worker worker = new Worker(i, promelaFile, s, this);
+                Worker worker = new Worker(i, promelaFile, s, red, this);
                 worker.start();
             }
         } catch (FileNotFoundException e) {
