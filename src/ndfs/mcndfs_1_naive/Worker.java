@@ -13,6 +13,9 @@ import ndfs.CycleFoundException;
 import ndfs.NDFS;
 import ndfs.NoCycleFoundException;
 import ndfs.ResultException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Worker implements Runnable, NDFS{
     private Thread t;
@@ -35,6 +38,15 @@ public class Worker implements Runnable, NDFS{
         this.colors = new Colors();
         this.red = red;
     }
+    
+    //TODO remove
+    private void printList(List<State> list) {
+        int j = 0;
+        for (State i: list) {
+            System.out.printf("[%d] %s\n", j, i);
+            j ++;
+        }   
+    }
 
     private void dfsBlue(State s) throws ResultException {
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
@@ -44,7 +56,7 @@ public class Worker implements Runnable, NDFS{
 
         colors.color(s, Color.CYAN);
         
-        for (State t : graph.post(s)) {
+        for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.WHITE) && !red.get(t)) {
                 dfsBlue(t);
             }
@@ -77,7 +89,7 @@ public class Worker implements Runnable, NDFS{
         //System.out.printf("[%d] dfsRed\n", threadNumber);
         colors.setPink(s, true);
         
-        for (State t : graph.post(s)) {
+        for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.CYAN)) {
                 throw new CycleFoundException();
             } else if (!colors.getPink(t) && !red.get(s)) {
@@ -118,6 +130,18 @@ public class Worker implements Runnable, NDFS{
         
         red.set(s);
         colors.setPink(s, false);
+    }
+    
+    private List<State> permute(List<State> list) {
+        List<State> result = new ArrayList<State>();
+        Random randomGenerator = new Random();
+        
+        while(list.size() > 0) {
+            int randomInt = randomGenerator.nextInt(list.size());
+            result.add(list.remove(randomInt));
+        }
+        
+        return result;
     }
 
     public void run() {

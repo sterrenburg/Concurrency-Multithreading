@@ -87,7 +87,7 @@ public class NNDFS implements NDFS {
     private void nndfs(State s) throws ResultException {
         //dfsBlue(s);
         //this.access(s);
-        
+//        Permute permute = new Permute();
         Red red = new Red();
         
         // run nrWorkers workers on dfsBlue
