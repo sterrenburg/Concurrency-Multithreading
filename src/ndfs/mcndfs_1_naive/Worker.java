@@ -50,6 +50,7 @@ public class Worker implements Runnable, NDFS{
 
     private void dfsBlue(State s) throws ResultException {
         if(nndfs.done) {
+//            System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
         }
         
@@ -92,6 +93,7 @@ public class Worker implements Runnable, NDFS{
     private void dfsRed(State s) throws ResultException {
         
         if(nndfs.done) {
+//            System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
         }
         
@@ -100,6 +102,8 @@ public class Worker implements Runnable, NDFS{
         
         for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.CYAN)) {
+                nndfs.done = true;
+//                System.out.printf("[%d] set flag to true\n", threadNumber);
                 throw new CycleFoundException();
             } else if (!colors.getPink(t) && !red.get(s)) {
                 dfsRed(t);
