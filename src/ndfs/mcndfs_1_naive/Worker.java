@@ -49,6 +49,10 @@ public class Worker implements Runnable, NDFS{
     }
 
     private void dfsBlue(State s) throws ResultException {
+        if(nndfs.done) {
+            return;
+        }
+        
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
         
     	//System.out.printf("[%d] dfsBlue\n", threadNumber);
@@ -86,6 +90,11 @@ public class Worker implements Runnable, NDFS{
     }
     
     private void dfsRed(State s) throws ResultException {
+        
+        if(nndfs.done) {
+            return;
+        }
+        
         //System.out.printf("[%d] dfsRed\n", threadNumber);
         colors.setPink(s, true);
         

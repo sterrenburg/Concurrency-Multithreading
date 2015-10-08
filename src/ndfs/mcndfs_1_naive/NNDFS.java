@@ -28,6 +28,7 @@ public class NNDFS implements NDFS {
     private Graph graph;
     
     public volatile Map<State, AtomicCounter> counter;
+    public volatile boolean done = false;
 
     /**
      * Constructs an NDFS object using the specified Promela file.
@@ -106,6 +107,17 @@ public class NNDFS implements NDFS {
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
+        
+        System.out.printf("start sleep\n");
+        
+        try {
+            Thread.sleep(3000);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        
+        System.out.printf("done sleep\n");
+        done = true;
         
         throw new NoCycleFoundException();
     }
