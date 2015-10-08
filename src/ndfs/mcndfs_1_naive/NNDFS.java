@@ -108,16 +108,17 @@ public class NNDFS implements NDFS {
             System.out.println(e.getMessage());
         }
         
-        System.out.printf("start sleep\n");
-        
-        try {
-            Thread.sleep(3000);                 //1000 milliseconds is one second.
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-        
-        System.out.printf("done sleep\n");
-        done = true;
+        // Allows for checking the flag functionality
+//        System.out.printf("start sleep\n");
+//        
+//        try {
+//            Thread.sleep(3000);                 //1000 milliseconds is one second.
+//        } catch(InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+//        
+//        System.out.printf("done sleep\n");
+//        done = true;
         
         throw new NoCycleFoundException();
     }
