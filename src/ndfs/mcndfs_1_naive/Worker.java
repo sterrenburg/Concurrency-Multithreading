@@ -185,7 +185,9 @@ public class Worker implements Runnable, NDFS{
     
     private void worker(State s) throws ResultException {
       dfsBlue(s);
-        throw new NoCycleFoundException();
+        if(!nndfs.done) {
+            throw new NoCycleFoundException();
+        }
     }
     
     @Override

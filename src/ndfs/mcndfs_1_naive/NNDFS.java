@@ -98,6 +98,8 @@ public class NNDFS implements NDFS {
 //            worker.start();
 //        }
         
+        // test
+        
         try {
             for(int i = 0; i < nrWorkers; i ++) {
                 //System.out.printf("Creating worker [%d]\n", i);
