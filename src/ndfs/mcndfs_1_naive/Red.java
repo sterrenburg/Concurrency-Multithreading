@@ -1,11 +1,13 @@
 package ndfs.mcndfs_1_naive;
 import java.io.PrintStream;
 import graph.State;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.*;
 
 public class Red {
     
-    private volatile ConcurrentLinkedQueue<State> red = new ConcurrentLinkedQueue<State>();
+    //Set s = Collections.synchronizedSet(new HashSet(...));
+    
+    private Set<State> red = Collections.synchronizedSet(new HashSet<State>());
     private volatile int count = 0; // for testing
     
     public Red() {
