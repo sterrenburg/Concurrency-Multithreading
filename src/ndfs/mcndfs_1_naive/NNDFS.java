@@ -27,7 +27,7 @@ public class NNDFS implements NDFS {
     private File promelaFile;
     private Graph graph;
     
-    public volatile Map<State, AtomicCounter> counter;
+    public volatile Map<State, Integer> counter;
     public volatile boolean done = false;
 
     /**
@@ -45,31 +45,38 @@ public class NNDFS implements NDFS {
         this.nrWorkers = nrWorkers;
         this.promelaFile = promelaFile;
         this.graph = GraphFactory.createGraph(promelaFile);
-        counter = new ConcurrentHashMap<State, AtomicCounter>();
+        counter = new ConcurrentHashMap<State, Integer>();
     }
     
-    public AtomicCounter getCount(State s) {
+    public int getCount(State s) {
         return counter.get(s);
     }
     
-    public AtomicCounter incrementCount(State s) {
+    public int incrementCount(State s) {
         synchronized(this){
-            AtomicCounter atomicCounter = counter.get(s);  
-            
+            //AtomicCounter atomicCounter = counter.get(s);  
+            volatile int count=counter.get(s);
             // TODO shouldn't be necessary
-            if(atomicCounter == null) {
-                atomicCounter = new AtomicCounter();
-                counter.put(s, atomicCounter);
+//            if(atomicCounter == null) {
+//                atomicCounter = new AtomicCounter();
+//                counter.put(s, atomicCounter);
+//            }
+            if(count==null){
+            	count=0;
+            	counter.put(s,count);
             }
-
-            return atomicCounter.increment();
+            return count++;
+//
+//            return atomicCounter.increment();
         }
     }
     
-    public AtomicCounter decrementCount(State s) {
+    public int decrementCount(State s) {
         synchronized(this){
-            AtomicCounter atomicCounter = counter.get(s);
-            return atomicCounter.decrement();
+//            AtomicCounter atomicCounter = counter.get(s);
+//            return atomicCounter.decrement();
+        	volatile int count=counter.get(s);
+        	return count--;
         }
     }
     
