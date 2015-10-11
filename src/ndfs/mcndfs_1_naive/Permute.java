@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Test class
+ */
 public class Permute {
     private List<Integer> list;
     

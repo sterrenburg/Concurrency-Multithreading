@@ -48,10 +48,17 @@ public class Colors {
             map.put(state, color);
         }
     }
+    
+    /**
+     * Sets the pink flag for State state.
+     */
     public boolean setPink(State state, Boolean bool) {
         return pink.put(state, bool) != null;
     }
     
+    /**
+     * Gets the pink flag for State state.
+     */
     public boolean getPink(State state) {
         Boolean contains = pink.get(state);
         

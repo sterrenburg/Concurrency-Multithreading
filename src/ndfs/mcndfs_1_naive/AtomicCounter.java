@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ndfs.mcndfs_1_naive;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- *
- * @author Dalie
+ * This class provides a thread safe counter by using an AtomicInteger.
  */
 class AtomicCounter {
     private volatile AtomicInteger c;

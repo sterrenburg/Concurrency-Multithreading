@@ -51,15 +51,21 @@ public class NNDFS implements NDFS {
         terminated = 0;
     }
     
+    /**
+     * Returns the counter object for a state.
+     */
     public AtomicCounter getCount(State s) {
         return counter.get(s);
     }
     
+    /**
+     * Increments the counter object for a state.
+     * A synchronized block is used to avoid race conditions,
+     *      since two atomic steps are performed.
+     */
     public AtomicCounter incrementCount(State s) {
         synchronized(this){
-            AtomicCounter atomicCounter = counter.get(s);  
-            
-            // TODO shouldn't be necessary
+            AtomicCounter atomicCounter = counter.get(s);
             if(atomicCounter == null) {
                 atomicCounter = new AtomicCounter();
                 counter.put(s, atomicCounter);
@@ -69,6 +75,9 @@ public class NNDFS implements NDFS {
         }
     }
     
+    /**
+     * Decrements the counter object for a state.
+     */
     public AtomicCounter decrementCount(State s) {
         synchronized(this){
             AtomicCounter atomicCounter = counter.get(s);
@@ -76,36 +85,14 @@ public class NNDFS implements NDFS {
         }
     }
     
-    // testing
-//    public void access(State s) {
-//        System.out.printf("nndfs access function\n");
-//        AtomicCounter c = new AtomicCounter();
-//        counter.put(s, c);
-//        c.increment();
-//        System.out.println("Incr count:"+c.value());
-//        this.incrementCount(s);
-//        System.out.println("is the mth incrementcount working?"+this.getCount(s).value());
-//
-//    }
-
+    /**
+     * Starts the worker threads and reports whether a cycle has been found.
+     */
     private void nndfs(State s) throws ResultException {
-        //dfsBlue(s);
-        //this.access(s);
-//        Permute permute = new Permute();
         Red red = new Red();
-        
-        // run nrWorkers workers on dfsBlue
-//        for(int i = 0; i < nrWorkers; i ++) {
-//            //System.out.printf("Creating worker [%d]\n", i);
-//            Worker worker = new Worker(i, promelaFile, s, this);
-//            worker.start();
-//        }
-        
-        // test
         
         try {
             for(int i = 0; i < nrWorkers; i ++) {
-                //System.out.printf("Creating worker [%d]\n", i);
                 Worker worker = new Worker(i, promelaFile, s, red, this);
                 worker.start();
             }

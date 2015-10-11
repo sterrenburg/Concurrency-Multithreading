@@ -25,8 +25,6 @@ public class Worker implements Runnable, NDFS{
     private Graph graph;
     
     private final Colors colors;
-    private State testState; // TODO remove
-    private int testCount = 0; // TODO remove
     private Red red;
 
     public Worker(int i, File promelaFile, State s, Red red, NNDFS nndfs) throws FileNotFoundException {
@@ -39,15 +37,6 @@ public class Worker implements Runnable, NDFS{
         this.red = red;
     }
     
-    //TODO remove
-    private void printList(List<State> list) {
-        int j = 0;
-        for (State i: list) {
-            System.out.printf("[%d] %s\n", j, i);
-            j ++;
-        }   
-    }
-
     private void dfsBlue(State s) throws ResultException {
         if(nndfs.done) {
             System.out.printf("[%d] done because of flag\n", threadNumber);
