@@ -74,7 +74,6 @@ public class Worker implements Runnable, NDFS{
                 synchronized(nndfs) {
                     if(!nndfs.cycleFound) {
                         nndfs.cycleFound = true;
-                        //                        this.nndfs.notifyAll(); // just for wait/notify
                         throw new CycleFoundException();
                     }
                 }
@@ -115,7 +114,7 @@ public class Worker implements Runnable, NDFS{
         try {
             worker(s);
         } catch (ResultException e) {
-            //System.out.println(e.getMessage()); // TODO maybe not needed
+            
         }
         
         synchronized(nndfs) {

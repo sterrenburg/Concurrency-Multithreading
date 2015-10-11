@@ -36,7 +36,6 @@ public class NNDFS implements NDFS {
      *             is thrown in case the file could not be read.
      */
     public NNDFS(File promelaFile, int nrWorkers) throws FileNotFoundException {
-        System.out.printf("mcnndfs: %d\n", nrWorkers); //TODO remove
         this.nrWorkers = nrWorkers;
         this.promelaFile = promelaFile;
         this.graph = GraphFactory.createGraph(promelaFile);
@@ -89,8 +88,6 @@ public class NNDFS implements NDFS {
                 }
             }
         }
-        
-        System.out.printf("done waiting\n"); //TODO remove
         
         if(cycleFound) {
             throw new CycleFoundException();
