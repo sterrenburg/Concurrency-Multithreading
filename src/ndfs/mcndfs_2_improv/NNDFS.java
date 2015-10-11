@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import graph.Graph;
 import graph.GraphFactory;
 import graph.State;
-import java.io.PrintStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import ndfs.CycleFoundException;
