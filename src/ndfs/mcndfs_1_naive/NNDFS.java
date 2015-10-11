@@ -14,13 +14,6 @@ import ndfs.NDFS;
 import ndfs.NoCycleFoundException;
 import ndfs.ResultException;
 
-/**
- * This is a straightforward implementation of Figure 1 of
- * <a href="http://www.cs.vu.nl/~tcs/cm/ndfs/laarman.pdf">
- * "the Laarman paper"</a>.
- *
- * This class should be modified/extended to implement Figure 2 of this paper.
- */
 public class NNDFS implements NDFS {
     
     private int nrWorkers;
@@ -31,7 +24,7 @@ public class NNDFS implements NDFS {
     public volatile boolean cycleFound = false;
     
     public int terminated;
-
+    
     /**
      * Constructs an NDFS object using the specified Promela file.
      *
@@ -43,7 +36,7 @@ public class NNDFS implements NDFS {
      *             is thrown in case the file could not be read.
      */
     public NNDFS(File promelaFile, int nrWorkers) throws FileNotFoundException {
-        System.out.printf("mcnndfs: %d\n", nrWorkers);
+        System.out.printf("mcnndfs: %d\n", nrWorkers); //TODO remove
         this.nrWorkers = nrWorkers;
         this.promelaFile = promelaFile;
         this.graph = GraphFactory.createGraph(promelaFile);
@@ -57,14 +50,13 @@ public class NNDFS implements NDFS {
     
     public AtomicCounter incrementCount(State s) {
         synchronized(this){
-            AtomicCounter atomicCounter = counter.get(s);  
+            AtomicCounter atomicCounter = counter.get(s);
             
-            // TODO shouldn't be necessary
             if(atomicCounter == null) {
                 atomicCounter = new AtomicCounter();
                 counter.put(s, atomicCounter);
             }
-
+            
             return atomicCounter.increment();
         }
     }
@@ -76,54 +68,17 @@ public class NNDFS implements NDFS {
         }
     }
     
-    // testing
-//    public void access(State s) {
-//        System.out.printf("nndfs access function\n");
-//        AtomicCounter c = new AtomicCounter();
-//        counter.put(s, c);
-//        c.increment();
-//        System.out.println("Incr count:"+c.value());
-//        this.incrementCount(s);
-//        System.out.println("is the mth incrementcount working?"+this.getCount(s).value());
-//
-//    }
-
     private void nndfs(State s) throws ResultException {
-        //dfsBlue(s);
-        //this.access(s);
-//        Permute permute = new Permute();
         Red red = new Red();
-        
-        // run nrWorkers workers on dfsBlue
-//        for(int i = 0; i < nrWorkers; i ++) {
-//            //System.out.printf("Creating worker [%d]\n", i);
-//            Worker worker = new Worker(i, promelaFile, s, this);
-//            worker.start();
-//        }
-        
-        // test
         
         try {
             for(int i = 0; i < nrWorkers; i ++) {
-                //System.out.printf("Creating worker [%d]\n", i);
                 Worker worker = new Worker(i, promelaFile, s, red, this);
                 worker.start();
             }
         } catch (FileNotFoundException e) {
             System.out.println(e.getMessage());
         }
-        
-        // Allows for checking the flag functionality
-//        System.out.printf("start sleep\n");
-//        
-//        try {
-//            Thread.sleep(3000);                 //1000 milliseconds is one second.
-//        } catch(InterruptedException ex) {
-//            Thread.currentThread().interrupt();
-//        }
-//        
-//        System.out.printf("done sleep\n");
-//        done = true;
         
         synchronized(this) {
             while(terminated != nrWorkers) {
@@ -135,11 +90,15 @@ public class NNDFS implements NDFS {
             }
         }
         
-        System.out.printf("done waiting\n");
+        System.out.printf("done waiting\n"); //TODO remove
         
-        throw new NoCycleFoundException();
+        if(cycleFound) {
+            throw new CycleFoundException();
+        } else {
+            throw new NoCycleFoundException();
+        }
     }
-
+    
     @Override
     public void ndfs() throws ResultException {
         nndfs(graph.getInitialState());

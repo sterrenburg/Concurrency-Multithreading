@@ -23,14 +23,10 @@ public class Worker implements Runnable, NDFS{
     private NNDFS nndfs;
     private State s;
     private Graph graph;
-    
     private final Colors colors;
-    private State testState; // TODO remove
-    private int testCount = 0; // TODO remove
     private Red red;
-
+    
     public Worker(int i, File promelaFile, State s, Red red, NNDFS nndfs) throws FileNotFoundException {
-        //System.out.printf("[%d] Creating\n", threadNumber);
         threadNumber = i;
         this.s = s;
         this.nndfs = nndfs;
@@ -39,27 +35,13 @@ public class Worker implements Runnable, NDFS{
         this.red = red;
     }
     
-    //TODO remove
-    private void printList(List<State> list) {
-        int j = 0;
-        for (State i: list) {
-            System.out.printf("[%d] %s\n", j, i);
-            j ++;
-        }   
-    }
-
     private void dfsBlue(State s) throws ResultException {
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
         
         if(nndfs.cycleFound) {
-                        System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
         }
-
         
-    	//System.out.printf("[%d] dfsBlue\n", threadNumber);
-        //System.out.printf("[%d]     no of pink: %d\n         no of red: %d (%d),(%s)\n", threadNumber, colors.pink.size(), red.size(), red.count(), red);
-
         colors.color(s, Color.CYAN);
         
         for (State t : permute(graph.post(s))) {
@@ -81,21 +63,18 @@ public class Worker implements Runnable, NDFS{
             
         }
         
-        // removed else statement here to conform to alg 2
         colors.color(s, Color.BLUE);
     }
     
     private void dfsRed(State s) throws ResultException {
-        //System.out.printf("[%d] dfsRed\n", threadNumber);
         colors.setPink(s, true);
         
         for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.CYAN)) {
-                //System.out.printf("[%d] set flag to true\n", threadNumber);
                 synchronized(nndfs) {
                     if(!nndfs.cycleFound) {
                         nndfs.cycleFound = true;
-                        this.nndfs.notifyAll();
+                        //                        this.nndfs.notifyAll(); // just for wait/notify
                         throw new CycleFoundException();
                     }
                 }
@@ -108,20 +87,12 @@ public class Worker implements Runnable, NDFS{
             synchronized(this.nndfs){
                 nndfs.decrementCount(s);
             }
-//                System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
-                AtomicCounter c = nndfs.getCount(s);
-                
-                //synchronized(c) {
-                while(c.value() > 0 && !nndfs.cycleFound) {
-//                  System.out.printf("[%d] spin on %s\n",threadNumber,s);
-                }
-                   // }
-                        
-            //}
-                System.out.printf("[%d] continsue %s\n",threadNumber,s);
-                    //}
             
+            AtomicCounter c = nndfs.getCount(s);
             
+            while(c.value() > 0 && !nndfs.cycleFound) {
+                // spin
+            }
         }
         
         red.set(s);
@@ -139,39 +110,30 @@ public class Worker implements Runnable, NDFS{
         
         return result;
     }
-
+    
     public void run() {
-//        System.out.printf("[%d] Running\n", threadNumber);
-        
-        // TODO catch to Main
         try {
             worker(s);
         } catch (ResultException e) {
-            System.out.println(e.getMessage());
-            // listener.notify to circumvent the fact that run() can't throw
-            // maybe use callable instead of runnable
+            //System.out.println(e.getMessage()); // TODO maybe not needed
         }
         
         synchronized(nndfs) {
             nndfs.terminated ++;
-            System.out.printf("[%d] Exiting (%d)\n", threadNumber, nndfs.terminated);
             nndfs.notify();
         }
-//        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
     }
     
     public void start () {
-//      System.out.printf("[%d] Starting\n",  threadNumber );
-
-      if (t == null)
-      {
-         t = new Thread (this, Integer.toString(threadNumber));
-         t.start ();
-      }
+        if (t == null)
+        {
+            t = new Thread (this, Integer.toString(threadNumber));
+            t.start ();
+        }
     }
     
     private void worker(State s) throws ResultException {
-      dfsBlue(s);
+        dfsBlue(s);
         if(!nndfs.cycleFound) {
             throw new NoCycleFoundException();
         }
