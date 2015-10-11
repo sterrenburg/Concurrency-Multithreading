@@ -51,10 +51,10 @@ public class Worker implements Runnable, NDFS{
     private void dfsBlue(State s) throws ResultException {
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
         
-//        if(nndfs.cycleFound) {
-//            //            System.out.printf("[%d] done because of flag\n", threadNumber);
-//            return;
-//        }
+        if(nndfs.cycleFound) {
+                        System.out.printf("[%d] done because of flag\n", threadNumber);
+            return;
+        }
 
         
     	//System.out.printf("[%d] dfsBlue\n", threadNumber);
@@ -115,7 +115,7 @@ public class Worker implements Runnable, NDFS{
                 }
                 
                 //synchronized(c) {
-                while(c.value() > 0) {
+                while(c.value() > 0 && !nndfs.cycleFound) {
                         try {
 //                            System.out.printf("[%d] going to wait %s\n",threadNumber,s);
                             this.nndfs.wait();
@@ -159,7 +159,11 @@ public class Worker implements Runnable, NDFS{
             // maybe use callable instead of runnable
         }
         
-//        System.out.printf("[%d] Exiting\n", threadNumber);
+        synchronized(nndfs) {
+            nndfs.terminated ++;
+            System.out.printf("[%d] Exiting (%d)\n", threadNumber, nndfs.terminated);
+            nndfs.notify();
+        }
 //        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
     }
     

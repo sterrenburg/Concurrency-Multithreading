@@ -29,6 +29,8 @@ public class NNDFS implements NDFS {
     
     public volatile Map<State, AtomicCounter> counter;
     public volatile boolean cycleFound = false;
+    
+    public int terminated;
 
     /**
      * Constructs an NDFS object using the specified Promela file.
@@ -46,6 +48,7 @@ public class NNDFS implements NDFS {
         this.promelaFile = promelaFile;
         this.graph = GraphFactory.createGraph(promelaFile);
         counter = new ConcurrentHashMap<State, AtomicCounter>();
+        terminated = 0;
     }
     
     public AtomicCounter getCount(State s) {
@@ -121,6 +124,18 @@ public class NNDFS implements NDFS {
 //        
 //        System.out.printf("done sleep\n");
 //        done = true;
+        
+        synchronized(this) {
+            while(terminated != nrWorkers) {
+                try {
+                    wait();
+                } catch(InterruptedException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+        
+        System.out.printf("done waiting\n");
         
         throw new NoCycleFoundException();
     }
