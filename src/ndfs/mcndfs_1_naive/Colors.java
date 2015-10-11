@@ -2,6 +2,8 @@ package ndfs.mcndfs_1_naive;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import graph.State;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,8 +13,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Colors {
 
     private final Map<State, Color> map    = new HashMap<State, Color>();
-    public final Map<State, Boolean> pink = new HashMap<State, Boolean>();
-
+    //public final Map<State, Boolean> pink = new HashMap<State, Boolean>();
+    public final Set<State> pink = new HashSet<State>();
     /**
      * Returns <code>true</code> if the specified state has the specified color,
      * <code>false</code> otherwise.
@@ -48,17 +50,27 @@ public class Colors {
             map.put(state, color);
         }
     }
-    public boolean setPink(State state, Boolean bool) {
-        return pink.put(state, bool) != null;
-    }
-    
-    public boolean getPink(State state) {
-        Boolean contains = pink.get(state);
-        
-        if(contains == null || contains == false) {
-            return false;
+//    public boolean setPink(State state, Boolean bool) {
+//        return pink.put(state, bool) != null;
+//    }
+//    
+//    public boolean getPink(State state) {
+//        Boolean contains = pink.get(state);
+//        
+//        if(contains == null || contains == false) {
+//            return false;
+//        }
+//        
+//        return true;
+//    }
+        public boolean setPink(State state){
+            return pink.add(state);   
         }
-        
-        return true;
-    }
+    
+        public boolean getPink(State state){
+            return pink.contains(state);
+        }
+        public int sizePink(){
+            return pink.size();
+        }
 }
