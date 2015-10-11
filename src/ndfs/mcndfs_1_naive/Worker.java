@@ -50,7 +50,7 @@ public class Worker implements Runnable, NDFS{
 
     private void dfsBlue(State s) throws ResultException {
         if(nndfs.done) {
-//            System.out.printf("[%d] done because of flag\n", threadNumber);
+            System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
         }
         
@@ -93,7 +93,7 @@ public class Worker implements Runnable, NDFS{
     private void dfsRed(State s) throws ResultException {
         
         if(nndfs.done) {
-//            System.out.printf("[%d] done because of flag\n", threadNumber);
+            System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
         }
         
@@ -164,12 +164,17 @@ public class Worker implements Runnable, NDFS{
         try {
             worker(s);
         } catch (ResultException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + "!");
             // listener.notify to circumvent the fact that run() can't throw
             // maybe use callable instead of runnable
         }
         
-//        System.out.printf("[%d] Exiting\n", threadNumber);
+        synchronized(nndfs) {
+            nndfs.terminated ++;
+            System.out.printf("[%d] Exiting\n", threadNumber);
+            System.out.printf("[%d] terminated: %d\n", threadNumber, nndfs.terminated);
+            nndfs.notify();
+        }
 //        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
     }
     
