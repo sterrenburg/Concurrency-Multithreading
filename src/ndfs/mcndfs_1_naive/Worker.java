@@ -49,12 +49,13 @@ public class Worker implements Runnable, NDFS{
     }
 
     private void dfsBlue(State s) throws ResultException {
-        if(nndfs.done) {
-//            System.out.printf("[%d] done because of flag\n", threadNumber);
-            return;
-        }
-        
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
+        
+//        if(nndfs.cycleFound) {
+//            //            System.out.printf("[%d] done because of flag\n", threadNumber);
+//            return;
+//        }
+
         
     	//System.out.printf("[%d] dfsBlue\n", threadNumber);
         //System.out.printf("[%d]     no of pink: %d\n         no of red: %d (%d),(%s)\n", threadNumber, colors.pink.size(), red.size(), red.count(), red);
@@ -63,26 +64,20 @@ public class Worker implements Runnable, NDFS{
         
         for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.WHITE) && !red.get(t)) {
-                dfsBlue(t);
+                if(!nndfs.cycleFound) {
+                    dfsBlue(t);
+                }
             }
         }
         
         if (s.isAccepting()) {
-            
-            //TODO check synchronized
             synchronized(this.nndfs){
-//                testCount ++;
                 nndfs.incrementCount(s);
-//                if(testCount == 100) {
-//                    testState = s;
-//                }
-//                
-//                if(testCount >= 100 && s == testState) {
-//                    System.out.printf("[%d] incr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
-//                }
             }
             
-            dfsRed(s);
+            if(!nndfs.cycleFound) {
+                dfsRed(s);
+            }
             
         }
         
@@ -91,21 +86,20 @@ public class Worker implements Runnable, NDFS{
     }
     
     private void dfsRed(State s) throws ResultException {
-        
-        if(nndfs.done) {
-//            System.out.printf("[%d] done because of flag\n", threadNumber);
-            return;
-        }
-        
         //System.out.printf("[%d] dfsRed\n", threadNumber);
         colors.setPink(s, true);
         
         for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.CYAN)) {
-                nndfs.done = true;
-//                System.out.printf("[%d] set flag to true\n", threadNumber);
-                throw new CycleFoundException();
-            } else if (!colors.getPink(t) && !red.get(s)) {
+                //System.out.printf("[%d] set flag to true\n", threadNumber);
+                synchronized(nndfs) {
+                    if(!nndfs.cycleFound) {
+                        nndfs.cycleFound = true;
+                        this.nndfs.notifyAll();
+                        throw new CycleFoundException();
+                    }
+                }
+            } else if (!colors.getPink(t) && !red.get(s) && !nndfs.cycleFound) {
                 dfsRed(t);
             }
         }
@@ -181,7 +175,7 @@ public class Worker implements Runnable, NDFS{
     
     private void worker(State s) throws ResultException {
       dfsBlue(s);
-        if(!nndfs.done) {
+        if(!nndfs.cycleFound) {
             throw new NoCycleFoundException();
         }
     }

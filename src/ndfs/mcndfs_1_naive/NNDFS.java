@@ -28,7 +28,7 @@ public class NNDFS implements NDFS {
     private Graph graph;
     
     public volatile Map<State, AtomicCounter> counter;
-    public volatile boolean done = false;
+    public volatile boolean cycleFound = false;
 
     /**
      * Constructs an NDFS object using the specified Promela file.
