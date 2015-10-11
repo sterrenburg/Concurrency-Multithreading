@@ -107,26 +107,19 @@ public class Worker implements Runnable, NDFS{
         if(s.isAccepting()) {
             synchronized(this.nndfs){
                 nndfs.decrementCount(s);
+            }
 //                System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
                 AtomicCounter c = nndfs.getCount(s);
-                if(c.value()==0){
-//                    System.out.printf("[%d] count is 0=>notify them %s\n",threadNumber,s);
-                    this.nndfs.notifyAll();
-                }
                 
                 //synchronized(c) {
                 while(c.value() > 0 && !nndfs.cycleFound) {
-                        try {
-//                            System.out.printf("[%d] going to wait %s\n",threadNumber,s);
-                            this.nndfs.wait();
-                        } catch(InterruptedException e) {
-
-                            }
+//                  System.out.printf("[%d] spin on %s\n",threadNumber,s);
+                }
                    // }
                         
-                }
-//                System.out.printf("[%d] continue %s\n",threadNumber,s);
-                    }
+            //}
+                System.out.printf("[%d] continsue %s\n",threadNumber,s);
+                    //}
             
             
         }
