@@ -78,7 +78,7 @@ public class Worker implements Runnable, NDFS{
 //                }
 //                
 //                if(testCount >= 100 && s == testState) {
-                    //System.out.printf("[%d] incr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
+//                    System.out.printf("[%d] incr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
 //                }
             }
             
@@ -112,34 +112,30 @@ public class Worker implements Runnable, NDFS{
         
         if(s.isAccepting()) {
             synchronized(this.nndfs){
-        	nndfs.decrementCount(s);
-//                if(testCount >= 100 && (testState != null)) {
-//                    if(s == testState) {
-                        //System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
-//                    }
-//                }
+                nndfs.decrementCount(s);
+//                System.out.printf("[%d] decr count %d (%s)\n", threadNumber, nndfs.getCount(s).value(), s);
+                AtomicCounter c = nndfs.getCount(s);
+                if(c.value()==0){
+//                    System.out.printf("[%d] count is 0=>notify them %s\n",threadNumber,s);
+                    this.nndfs.notifyAll();
+                }
                 
-                
-            }
+                //synchronized(c) {
+                while(c.value() > 0) {
+                        try {
+//                            System.out.printf("[%d] going to wait %s\n",threadNumber,s);
+                            this.nndfs.wait();
+                        } catch(InterruptedException e) {
 
-        	AtomicCounter c = nndfs.getCount(s);
-        	
-            int i = 0;
-//            int j = c.value();
+                            }
+                   // }
+                        
+                }
+//                System.out.printf("[%d] continue %s\n",threadNumber,s);
+                    }
             
-        	while(c.value() > 0) {
-        		// spin
-                //i ++;
-                //if(i % 200 == 0) {
-                    //System.out.printf("[%d] spinning on %s\n", threadNumber, s);
-                //}
-                
-                //j = c.value();
-        	}
             
-            //System.out.printf("[%d] continue (value:)\n", threadNumber);
         }
-        //} // from synchronized
         
         red.set(s);
         colors.setPink(s, false);
