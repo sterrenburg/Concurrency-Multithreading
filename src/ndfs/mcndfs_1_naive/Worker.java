@@ -77,10 +77,14 @@ public class Worker implements Runnable, NDFS{
         
         // removed else statement here to conform to alg 2
         colors.color(s, Color.BLUE);
+        
+        if(nndfs.done) {
+            System.out.printf("[%d] done because of flag\n", threadNumber);
+            return;
+        }
     }
     
     private void dfsRed(State s) throws ResultException {
-        
         if(nndfs.done) {
             System.out.printf("[%d] done because of flag\n", threadNumber);
             return;
@@ -160,8 +164,8 @@ public class Worker implements Runnable, NDFS{
         
         synchronized(nndfs) {
             nndfs.terminated ++;
-            System.out.printf("[%d] Exiting\n", threadNumber);
-            System.out.printf("[%d] terminated: %d\n", threadNumber, nndfs.terminated);
+//            System.out.printf("[%d] Exiting\n", threadNumber);
+//            System.out.printf("[%d] terminated: %d\n", threadNumber, nndfs.terminated);
             nndfs.notify();
         }
 //        System.out.printf("[%d] (red size: %d, red count: %d)\n", threadNumber, red.size(), red.count());
