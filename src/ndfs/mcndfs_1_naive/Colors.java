@@ -13,7 +13,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Colors {
 
     private final Map<State, Color> map    = new HashMap<State, Color>();
-    //public final Map<State, Boolean> pink = new HashMap<State, Boolean>();
     public final Set<State> pink = new HashSet<State>();
     /**
      * Returns <code>true</code> if the specified state has the specified color,
@@ -50,19 +49,7 @@ public class Colors {
             map.put(state, color);
         }
     }
-//    public boolean setPink(State state, Boolean bool) {
-//        return pink.put(state, bool) != null;
-//    }
-//    
-//    public boolean getPink(State state) {
-//        Boolean contains = pink.get(state);
-//        
-//        if(contains == null || contains == false) {
-//            return false;
-//        }
-//        
-//        return true;
-//    }
+
         public boolean setPink(State state){
             return pink.add(state);   
         }
@@ -70,7 +57,5 @@ public class Colors {
         public boolean getPink(State state){
             return pink.contains(state);
         }
-        public int sizePink(){
-            return pink.size();
-        }
+
 }

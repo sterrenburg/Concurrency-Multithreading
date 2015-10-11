@@ -37,7 +37,7 @@ public class Worker implements Runnable, NDFS{
     
     private void dfsBlue(State s) throws ResultException {
         nndfs.counter.putIfAbsent(s, new AtomicCounter());
-        System.out.println("pink size:"+ colors.sizePink());
+       
         if(nndfs.cycleFound) {
             return;
         }
@@ -67,7 +67,6 @@ public class Worker implements Runnable, NDFS{
     }
     
     private void dfsRed(State s) throws ResultException {
-       // colors.setPink(s, true);
         colors.setPink(s);
         for (State t : permute(graph.post(s))) {
             if (colors.hasColor(t, Color.CYAN)) {
@@ -103,7 +102,6 @@ public class Worker implements Runnable, NDFS{
         }
         
         red.set(s);
-       // colors.setPink(s, false);
         colors.setPink(s);
     }
     
